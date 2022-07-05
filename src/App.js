@@ -1,25 +1,30 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useMemo } from "react";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { Container, Stack } from "@mui/material";
+import { Calculator, Footer } from "./components";
+import { calculatorKeys, footerProps } from "./constants";
+import { flexCenterColumn } from "./styles";
 
-function App() {
+export const App = () => {
+  const getCalcKeys = useMemo(() => calculatorKeys, []);
+  const memoizedFooter = useMemo(() => footerProps, []);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Container sx={{ ...flexCenterColumn }}>
+      <Calculator calcKeys={getCalcKeys}></Calculator>
+      <Footer footer={memoizedFooter}></Footer>
+      <ToastContainer
+        position="bottom-center"
+        autoClose={1000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+      />
+    </Container>
   );
-}
-
-export default App;
+};
