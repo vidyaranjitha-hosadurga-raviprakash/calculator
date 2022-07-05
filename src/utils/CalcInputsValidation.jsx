@@ -14,9 +14,12 @@ export const validateCalcInputs = (previousInput, currentInput) => {
     lastChar = previousInput[previousInputLen - 1];
   }
 
-  // When first input is the operator or repeated operators pressed then  just return
   if (!isDigitCurrentInput) {
-    if (currentInput.name === operations.CLEAR) {
+    // When first input is the operator or minus then validation is success
+    if (
+      currentInput.name === operations.CLEAR ||
+      currentInput.name === operations.MINUS
+    ) {
       return response;
     }
     if (!previousInputLen && !isDecimalInput) {
@@ -24,13 +27,13 @@ export const validateCalcInputs = (previousInput, currentInput) => {
       return response;
     }
 
-    // Consecutive different operators entered
+    // Validation fails when consecutive different operators entered
     if (isOperator(lastChar?.toString())) {
       response.success = false;
       response.error = "Invalid format used";
     }
 
-    // Consecutive same operators entered
+    // Validation faile when consecutive same operators entered
     if (lastChar?.toString() === currentInput.value?.toString()) {
       response.success = false;
       response.error = "";
