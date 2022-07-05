@@ -1,8 +1,8 @@
 type FooterProps = {
-  footerName: string,
+  footerName: string;
   typography: {
-    color?: string,
-    variant?: "subtitle2" | "subtitle1",
-    sx?: {}[],
-  },
+    color?: string;
+    variant?: "subtitle2" | "subtitle1";
+    sx?: {}[];
+  };
 };

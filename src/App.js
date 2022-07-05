@@ -1,7 +1,7 @@
 import React, { useMemo } from "react";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { Container, Stack } from "@mui/material";
+import { Container } from "@mui/material";
 import { Calculator, Footer } from "./components";
 import { calculatorKeys, footerProps } from "./constants";
 import { flexCenterColumn } from "./styles";

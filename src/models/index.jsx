@@ -1,1 +1,1 @@
-export { FooterProps } from "./FooterModels";
+export { FooterProps } from "./FooterModels.tsx";
