@@ -39,7 +39,7 @@ export const Calculator = React.memo(({ calcKeys }) => {
     const calcInputLen = calc.input.length;
     var previousPressedKey = "";
     if (calcInputLen) {
-      previousPressedKey = calc.input[calcInputLen - 1];
+      previousPressedKey = calc.input.at(-1);
     }
 
     if (currentPressedKey.name === operations.CLEAR) {
@@ -47,7 +47,6 @@ export const Calculator = React.memo(({ calcKeys }) => {
     } else {
       if (isDecimal(currentPressedKey.value)) {
         if (isOperator(previousPressedKey) || !previousPressedKey) {
-          console.log("Calculator: previousPressedKey is operator oder 0 len");
           currentPressedKey.value = "0.";
         }
       }
@@ -58,6 +57,11 @@ export const Calculator = React.memo(({ calcKeys }) => {
           // );
           calc.input = calc.input.concat("0");
         }
+
+        if (isOperator(previousPressedKey)) {
+          console.log("Stripping");
+          calc.input = calc.input.slice(0, -1);
+        }
       }
     }
 
@@ -65,9 +69,23 @@ export const Calculator = React.memo(({ calcKeys }) => {
       calc.input,
       currentPressedKey
     );
-    console.log("Calculator : success= ", success);
+    // console.log(
+    //   "Calculator : success= ",
+    //   success,
+    //   "and calc = ",
+    //   calc,
+    //   "previousPressedKey = ",
+    //   previousPressedKey
+    // );
 
     if (error?.length) {
+      if (
+        previousPressedKey === operations.MINUS ||
+        previousPressedKey === operations.ADD
+      ) {
+        newCalc.input = previousPressedKey;
+        setCalc(newCalc);
+      }
       return toastMsg({
         type: toastMsgConstant.TOAST_ERROR,
         msg: error,
@@ -75,7 +93,7 @@ export const Calculator = React.memo(({ calcKeys }) => {
       });
     }
     if (success) {
-      const updatedInput = calc.input + currentPressedKey.value;
+      const updatedInput = `${calc.input}${currentPressedKey.value}`;
       if (!updatedInput.length) {
         newCalc.input = defaultValuesCalc.input;
         newCalc.result = defaultValuesCalc.result;

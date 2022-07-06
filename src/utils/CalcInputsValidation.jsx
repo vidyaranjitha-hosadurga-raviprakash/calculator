@@ -16,25 +16,30 @@ export const validateCalcInputs = (previousInput, currentInput) => {
 
   // When entered key is not digit i.e operators or dot or AC or C or =
   if (!isDigitCurrentInput) {
-    console.log(
-      "validate : lastChar = ",
-      lastChar,
-      " isDecimalInput = ",
-      isDecimalInput,
-      " currentInput = ",
-      currentInput.value
-    );
+    // console.log(
+    //   "validate : lastChar = ",
+    //   lastChar,
+    //   " isDecimalInput = ",
+    //   isDecimalInput,
+    //   " currentInput = ",
+    //   currentInput.value
+    // );
     if (
       currentInput.name === operations.CLEAR ||
-      (currentInput.name === operations.MINUS &&
-        !isOperator(lastChar?.toString()))
+      currentInput.name === operations.MINUS
+      // && !isOperator(lastChar?.toString())
     ) {
       return response;
     }
 
-    // When first input is the operator or minus then validation is success
-    if (!previousInputLen && !isDecimalInput) {
+    // When first input is the operator or decimal or minus or plus then validation is success
+    if (
+      !previousInputLen &&
+      !isDecimalInput &&
+      currentInput.name !== operations.ADD
+    ) {
       response.success = false;
+      response.error = "Invalid format used";
       return response;
     }
 
@@ -44,10 +49,10 @@ export const validateCalcInputs = (previousInput, currentInput) => {
       response.error = "Invalid format used";
     }
 
-    // Validation faile when consecutive same operators entered
+    // Validation fails when consecutive same operators entered
     if (lastChar?.toString() === currentInput.value?.toString()) {
       response.success = false;
-      response.error = "";
+      response.error = "Invalid format used";
     }
   }
   return response;
