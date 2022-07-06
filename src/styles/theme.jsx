@@ -6,7 +6,7 @@ export let theme = createTheme({
       contrastText: "#fafafa",
     },
     secondary: {
-      main: "rgb(2245, 124, 0,0.6)",
+      main: "rgb(2245, 124, 0,0.8)",
     },
 
     text: {
