@@ -19,16 +19,24 @@ const getInputsColor = (keyName) => {
 
 export const CalculatorInputsPanel = ({ calcKeys, clickHandler }) => {
   const keyButtonItem = (calcKey, index) => {
-    const { inputKeyColor, buttonColor } = getInputsColor(calcKey.value);
+    const currentPresssedCalcKey = { ...calcKey };
+    const { inputKeyColor, buttonColor } = getInputsColor(
+      currentPresssedCalcKey.value
+    );
+
     return (
       <Grid item xs={3} sm={3} md={3} key={index} lg={3}>
         <Button
           color={buttonColor}
           variant="contained"
-          onClick={() => clickHandler(calcKey)}
+          onClick={() => {
+            clickHandler(currentPresssedCalcKey);
+          }}
           sx={{ width: index === calcKeys.length - 1 ? "9rem" : "" }}
         >
-          <Typography color={inputKeyColor}>{calcKey.name}</Typography>
+          <Typography color={inputKeyColor}>
+            {currentPresssedCalcKey.name}
+          </Typography>
         </Button>
       </Grid>
     );

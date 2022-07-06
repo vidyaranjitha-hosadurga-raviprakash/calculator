@@ -21,7 +21,7 @@ export const Calculator = React.memo(({ calcKeys }) => {
   var resultRef = useRef();
   const compute = (currentPressedKey) => {
     const newCalc = { ...calc };
-
+    console.log("Calculator: currentPressedKey = ", currentPressedKey);
     if (currentPressedKey.name === operations.ALL_CLEAR) {
       newCalc.input = defaultValuesCalc.input;
       newCalc.result = defaultValuesCalc.result;
@@ -47,7 +47,7 @@ export const Calculator = React.memo(({ calcKeys }) => {
     } else {
       if (isDecimal(currentPressedKey.value)) {
         if (isOperator(previousPressedKey) || !previousPressedKey) {
-          // console.log("Calculator: previousPressedKey is operator oder 0 len");
+          console.log("Calculator: previousPressedKey is operator oder 0 len");
           currentPressedKey.value = "0.";
         }
       }
@@ -65,7 +65,7 @@ export const Calculator = React.memo(({ calcKeys }) => {
       calc.input,
       currentPressedKey
     );
-    // console.log("Calculator : success= ", success);
+    console.log("Calculator : success= ", success);
 
     if (error?.length) {
       return toastMsg({

@@ -11,24 +11,35 @@ export const validateCalcInputs = (previousInput, currentInput) => {
   const isDecimalInput = isDecimal(currentInput.value);
   var lastChar = "";
   if (previousInputLen) {
-    lastChar = previousInput[previousInputLen - 1];
+    lastChar = previousInput.at(-1);
   }
 
+  // When entered key is not digit i.e operators or dot or AC or C or =
   if (!isDigitCurrentInput) {
-    // When first input is the operator or minus then validation is success
+    console.log(
+      "validate : lastChar = ",
+      lastChar,
+      " isDecimalInput = ",
+      isDecimalInput,
+      " currentInput = ",
+      currentInput.value
+    );
     if (
       currentInput.name === operations.CLEAR ||
-      currentInput.name === operations.MINUS
+      (currentInput.name === operations.MINUS &&
+        !isOperator(lastChar?.toString()))
     ) {
       return response;
     }
+
+    // When first input is the operator or minus then validation is success
     if (!previousInputLen && !isDecimalInput) {
       response.success = false;
       return response;
     }
 
-    // Validation fails when consecutive different operators entered
-    if (isOperator(lastChar?.toString())) {
+    // Validation fails when consecutive different operators(expect) entered
+    if (isOperator(lastChar?.toString()) && !isDecimalInput) {
       response.success = false;
       response.error = "Invalid format used";
     }
