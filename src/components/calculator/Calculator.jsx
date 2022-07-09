@@ -107,7 +107,7 @@ export const Calculator = React.memo(({ calcKeys }) => {
         if (isDigit(lastInputChar) && isInputContainOperator) {
           try {
             const result = eval(updatedInput.toString());
-            newCalc.result = result;
+            newCalc.result = result.toFixed(3);
           } catch (err) {
             return toastMsg({
               type: toastMsgConstant.TOAST_ERROR,
