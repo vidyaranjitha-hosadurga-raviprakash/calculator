@@ -14,17 +14,30 @@ const defaultValuesCalc = {
   input: "",
   result: "",
   error: "",
+  pressedOperatorsList: "",
+  units: 0,
 };
 
 export const Calculator = React.memo(({ calcKeys }) => {
   const [calc, setCalc] = useState(defaultValuesCalc);
   var resultRef = useRef();
+  // console.log("Calculator: calc = ", calc);
+  const getUnits = () => {
+    // Return the number of units only when there are addition.
+    if (
+      calc.pressedOperatorsList === "+".repeat(calc.pressedOperatorsList.length)
+    ) {
+      const unitsCount = calc.input.split("+").length;
+      return calc.input.startsWith("+") ? unitsCount - 1 : unitsCount;
+    }
+  };
   const compute = (currentPressedKey) => {
     const newCalc = { ...calc };
-    console.log("Calculator: currentPressedKey = ", currentPressedKey);
     if (currentPressedKey.name === operations.ALL_CLEAR) {
       newCalc.input = defaultValuesCalc.input;
       newCalc.result = defaultValuesCalc.result;
+      newCalc.pressedOperatorsList = defaultValuesCalc.pressedOperatorsList;
+      newCalc.units = defaultValuesCalc.units;
       setCalc(newCalc);
       return;
     }
@@ -44,6 +57,12 @@ export const Calculator = React.memo(({ calcKeys }) => {
 
     if (currentPressedKey.name === operations.CLEAR) {
       calc.input = calc.input.slice(0, -1);
+
+      // Updating the operators
+      if (isOperator(previousPressedKey)) {
+        calc.pressedOperatorsList = calc.pressedOperatorsList.slice(0, -1);
+        newCalc.units = getUnits();
+      }
     } else {
       if (isDecimal(currentPressedKey.value)) {
         if (isOperator(previousPressedKey) || !previousPressedKey) {
@@ -51,6 +70,8 @@ export const Calculator = React.memo(({ calcKeys }) => {
         }
       }
       if (isOperator(currentPressedKey.value)) {
+        calc.pressedOperatorsList =
+          calc.pressedOperatorsList + currentPressedKey.value;
         if (isDecimal(previousPressedKey)) {
           // console.log(
           //   "Calculator: currentPressedKey is operator and previousPressedKey was decimal so concat 0"
@@ -69,14 +90,14 @@ export const Calculator = React.memo(({ calcKeys }) => {
       calc.input,
       currentPressedKey
     );
-    // console.log(
-    //   "Calculator : success= ",
-    //   success,
-    //   "and calc = ",
-    //   calc,
-    //   "previousPressedKey = ",
-    //   previousPressedKey
-    // );
+    console.log(
+      "Calculator : success= ",
+      success,
+      "and calc = ",
+      calc,
+      "previousPressedKey = ",
+      previousPressedKey
+    );
 
     if (error?.length) {
       if (
@@ -94,9 +115,12 @@ export const Calculator = React.memo(({ calcKeys }) => {
     }
     if (success) {
       const updatedInput = `${calc.input}${currentPressedKey.value}`;
+      newCalc.pressedOperatorsList = calc.pressedOperatorsList;
       if (!updatedInput.length) {
         newCalc.input = defaultValuesCalc.input;
         newCalc.result = defaultValuesCalc.result;
+        newCalc.pressedOperatorsList = defaultValuesCalc.pressedOperatorsList;
+        newCalc.units = defaultValuesCalc.units;
       } else {
         const lastInputChar = updatedInput[updatedInput.length - 1];
         newCalc.input = updatedInput;
@@ -108,6 +132,7 @@ export const Calculator = React.memo(({ calcKeys }) => {
           try {
             const result = eval(updatedInput.toString());
             newCalc.result = result.toFixed(3);
+            newCalc.units = getUnits();
           } catch (err) {
             return toastMsg({
               type: toastMsgConstant.TOAST_ERROR,
@@ -116,6 +141,7 @@ export const Calculator = React.memo(({ calcKeys }) => {
             });
           }
         }
+
         if (isOperator(lastInputChar)) {
           newCalc.result = defaultValuesCalc.result;
         }
@@ -124,6 +150,7 @@ export const Calculator = React.memo(({ calcKeys }) => {
       setCalc(newCalc);
     }
   };
+
   return (
     <Stack
       spacing={3}
