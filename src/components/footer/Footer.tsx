@@ -10,7 +10,7 @@ export const Footer = React.memo(
     },
   }: FooterProps) => {
     return (
-      <Box sx={{ ...flexCenter, margin: "0.4rem 0rem" }}>
+      <Box sx={{ ...flexCenter, margin: "0rem 0rem" }}>
         <Typography color={color} variant={variant} sx={sx}>
           {footerName}
         </Typography>
