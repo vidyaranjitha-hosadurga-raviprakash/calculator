@@ -57,11 +57,11 @@ export const Calculator = React.memo(({ calcKeys }) => {
           css: {},
         });
       }
-      resultRef.current.style.fontSize = "1.6rem";
+      resultRef.current.style.fontSize = "2.3rem";
       calc.input = calc.result?.toString();
       return;
     } else {
-      resultRef.current.style.fontSize = "1.2rem";
+      resultRef.current.style.fontSize = "1.7rem";
     }
 
     if (currentPressedKey.name === operations.CLEAR) {
