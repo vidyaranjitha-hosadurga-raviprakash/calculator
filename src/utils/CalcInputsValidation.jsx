@@ -27,7 +27,6 @@ export const validateCalcInputs = (previousInput, currentInput) => {
     if (
       currentInput.name === operations.CLEAR ||
       currentInput.name === operations.MINUS
-      // && !isOperator(lastChar?.toString())
     ) {
       return response;
     }

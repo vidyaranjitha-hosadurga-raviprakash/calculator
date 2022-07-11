@@ -23,7 +23,7 @@ export const Calculator = React.memo(({ calcKeys }) => {
   var resultRef = useRef();
   // console.log("Calculator: calc = ", calc);
   const getUnits = () => {
-    // Return the number of units only when there are addition.
+    // Return the number of units only when there are additions.
     if (
       calc.pressedOperatorsList === "+".repeat(calc.pressedOperatorsList.length)
     ) {
@@ -41,18 +41,27 @@ export const Calculator = React.memo(({ calcKeys }) => {
       setCalc(newCalc);
       return;
     }
-    if (currentPressedKey.name === operations.ENTER) {
-      resultRef.current.style.fontSize = "2.5rem";
-      calc.input = calc.result ? calc.result.toString() : "";
-      return;
-    } else {
-      resultRef.current.style.fontSize = "1.5rem";
-    }
 
     const calcInputLen = calc.input.length;
     var previousPressedKey = "";
     if (calcInputLen) {
       previousPressedKey = calc.input.at(-1);
+    }
+
+    if (currentPressedKey.name === operations.ENTER) {
+      // Throw an error when enter is pressed right after any operators
+      if (isOperator(previousPressedKey)) {
+        return toastMsg({
+          type: toastMsgConstant.TOAST_ERROR,
+          msg: "Invalid format used",
+          css: {},
+        });
+      }
+      resultRef.current.style.fontSize = "1.6rem";
+      calc.input = calc.result?.toString();
+      return;
+    } else {
+      resultRef.current.style.fontSize = "1.2rem";
     }
 
     if (currentPressedKey.name === operations.CLEAR) {
@@ -80,7 +89,7 @@ export const Calculator = React.memo(({ calcKeys }) => {
         }
 
         if (isOperator(previousPressedKey)) {
-          console.log("Stripping");
+          // console.log("Stripping");
           calc.input = calc.input.slice(0, -1);
         }
       }
@@ -90,14 +99,14 @@ export const Calculator = React.memo(({ calcKeys }) => {
       calc.input,
       currentPressedKey
     );
-    console.log(
-      "Calculator : success= ",
-      success,
-      "and calc = ",
-      calc,
-      "previousPressedKey = ",
-      previousPressedKey
-    );
+    // console.log(
+    //   "Calculator : success= ",
+    //   success,
+    //   "and calc = ",
+    //   calc,
+    //   "previousPressedKey = ",
+    //   previousPressedKey
+    // );
 
     if (error?.length) {
       if (
@@ -142,8 +151,11 @@ export const Calculator = React.memo(({ calcKeys }) => {
           }
         }
 
+        //When lastInput is the operator then hide the result else unhide the result
         if (isOperator(lastInputChar)) {
-          newCalc.result = defaultValuesCalc.result;
+          resultRef.current.style.display = "none";
+        } else {
+          resultRef.current.style.display = "";
         }
       }
       // console.log("Calculator: updating the calc , newCalc = ", newCalc);

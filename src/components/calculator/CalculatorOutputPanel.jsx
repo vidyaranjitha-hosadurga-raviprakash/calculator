@@ -22,23 +22,36 @@ export const CalculatorOutputPanel = React.forwardRef(({ value }, ref) => {
         direction="column"
         spacing={1}
         sx={{
-          width: "19rem",
-          paddingRight: "0.5rem",
+          overflowWrap: "break-word",
           textAlign: "right",
           border: "0.01rem white solid",
         }}
       >
-        <Grid item sx={{ height: "2rem" }}>
-          <Typography variant="h5">{value.input}</Typography>
+        <Grid
+          item
+          sx={{
+            minHeight: "2rem",
+            width: "19rem",
+            padding: "0rem 0.5rem 0rem 1rem",
+          }}
+        >
+          <Typography variant="h6">{value.input}</Typography>
         </Grid>
-        <Grid item sx={{ height: "4rem" }}>
+        <Grid
+          item
+          sx={{
+            width: "19rem",
+            minHeight: "4rem",
+            padding: "0rem 0.5rem 0rem 1rem",
+          }}
+        >
           {value.error.length ? (
             <Typography variant="caption" ref={ref}>
               {value.error}
             </Typography>
           ) : (
-            <Typography variant="h5" ref={ref}>
-              {value.result}
+            <Typography variant="h6" ref={ref}>
+              {Number(value.result)}
             </Typography>
           )}
         </Grid>
