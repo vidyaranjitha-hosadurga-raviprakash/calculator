@@ -49,8 +49,8 @@ export const Calculator = React.memo(({ calcKeys }) => {
     }
 
     if (currentPressedKey.name === operations.ENTER) {
-      // Throw an error when enter is pressed right after any operators
-      if (isOperator(previousPressedKey)) {
+      // Throw an error when no inputs provided or enter is pressed right after any operators
+      if (!calc.input?.length || isOperator(previousPressedKey)) {
         return toastMsg({
           type: toastMsgConstant.TOAST_ERROR,
           msg: "Invalid format used",
@@ -58,7 +58,7 @@ export const Calculator = React.memo(({ calcKeys }) => {
         });
       }
       resultRef.current.style.fontSize = "2.3rem";
-      calc.input = calc.result?.toString();
+      calc.input = Number(calc.result?.toString().trim());
       return;
     } else {
       resultRef.current.style.fontSize = "1.7rem";
@@ -123,7 +123,7 @@ export const Calculator = React.memo(({ calcKeys }) => {
       });
     }
     if (success) {
-      const updatedInput = `${calc.input}${currentPressedKey.value}`;
+      const updatedInput = `${calc.input}${currentPressedKey.value}`.trim();
       newCalc.pressedOperatorsList = calc.pressedOperatorsList;
       if (!updatedInput.length) {
         newCalc.input = defaultValuesCalc.input;
@@ -131,7 +131,7 @@ export const Calculator = React.memo(({ calcKeys }) => {
         newCalc.pressedOperatorsList = defaultValuesCalc.pressedOperatorsList;
         newCalc.units = defaultValuesCalc.units;
       } else {
-        const lastInputChar = updatedInput[updatedInput.length - 1];
+        const lastInputChar = updatedInput.at(-1);
         newCalc.input = updatedInput;
         const isInputContainOperator = operatorsList.some((i) => {
           return updatedInput.includes(i);

@@ -51,7 +51,7 @@ export const CalculatorOutputPanel = React.forwardRef(({ value }, ref) => {
             </Typography>
           ) : (
             <Typography variant="h6" ref={ref}>
-              {Number(value.result)}
+              {value.result?.length ? Number(value.result) : value.result}
             </Typography>
           )}
         </Grid>
