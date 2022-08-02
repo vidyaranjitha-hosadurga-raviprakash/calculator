@@ -2,8 +2,7 @@ import React, { useState, useRef } from "react";
 import { Stack } from "@mui/material";
 import { CalculatorInputsPanel, CalculatorOutputPanel } from "./";
 import { operations, operatorsList } from "../../constants";
-import { toastMsg, toastMsgConstant } from "../../components";
-
+import { toast } from "react-toastify";
 import {
   defaultValuesCalc,
   isDigit,
@@ -61,11 +60,7 @@ export const Calculator = React.memo(({ calcKeys }) => {
         newCalc.input = previousPressedKey;
         setCalc(newCalc);
       }
-      return toastMsg({
-        type: toastMsgConstant.TOAST_ERROR,
-        msg: error,
-        css: {},
-      });
+      return toast.error(error);
     }
 
     const updatedInput = `${calc.input}${currentPressedKey.value}`.trim();
@@ -88,11 +83,7 @@ export const Calculator = React.memo(({ calcKeys }) => {
           newCalc.result = result.toFixed(3);
           newCalc.units = getUnitsCount(calc);
         } catch (err) {
-          return toastMsg({
-            type: toastMsgConstant.TOAST_ERROR,
-            msg: err,
-            css: {},
-          });
+          toast.error(err);
         }
       }
 

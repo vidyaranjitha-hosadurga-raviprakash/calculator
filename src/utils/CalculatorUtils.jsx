@@ -1,5 +1,5 @@
 import { operations } from "../constants";
-import { toastMsg, toastMsgConstant } from "../components";
+import { toast } from "react-toastify";
 import { isDigit, isDecimal, isOperator } from "./index";
 
 export const defaultValuesCalc = {
@@ -79,11 +79,7 @@ export const handleAllClear = (newCalc) => {
 export const handleEnter = (calc, previousPressedKey, resultRef) => {
   // Throw an error when no inputs provided or enter is pressed right after any operators
   if (!calc.input?.length || isOperator(previousPressedKey)) {
-    return toastMsg({
-      type: toastMsgConstant.TOAST_ERROR,
-      msg: "Invalid format used",
-      css: {},
-    });
+    return toast.error("Invalid format used");
   }
   calc.input = Number(calc.result?.toString().trim());
   resultRef.current.style.fontSize = "2.3rem";
