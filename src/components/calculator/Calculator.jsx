@@ -18,81 +18,98 @@ const defaultValuesCalc = {
   units: 0,
 };
 
+const getUnitsCount = (calc) => {
+  // Return the number of units only when there are additions.
+  if (
+    calc.pressedOperatorsList ===
+    operations.ADD.repeat(calc.pressedOperatorsList.length)
+  ) {
+    const unitsCount = calc.input.split(operations.ADD).length;
+    return calc.input.startsWith(operations.ADD) ? unitsCount - 1 : unitsCount;
+  }
+};
+
+const doAllClear = (newCalc) => {
+  newCalc.input = defaultValuesCalc.input;
+  newCalc.result = defaultValuesCalc.result;
+  newCalc.pressedOperatorsList = defaultValuesCalc.pressedOperatorsList;
+  newCalc.units = defaultValuesCalc.units;
+  return;
+};
+
+const doOnEnterOperations = (calc, previousPressedKey, resultRef) => {
+  // Throw an error when no inputs provided or enter is pressed right after any operators
+  if (!calc.input?.length || isOperator(previousPressedKey)) {
+    return toastMsg({
+      type: toastMsgConstant.TOAST_ERROR,
+      msg: "Invalid format used",
+      css: {},
+    });
+  }
+  calc.input = Number(calc.result?.toString().trim());
+  resultRef.current.style.fontSize = "2.3rem";
+};
+
+const doClear = (calc, previousPressedKey, newCalc) => {
+  console.log("Calculator: doClear");
+  calc.input = calc.input.slice(0, -1);
+
+  // Updating the unit's count when number is removed.
+  if (isOperator(previousPressedKey)) {
+    calc.pressedOperatorsList = calc.pressedOperatorsList.slice(0, -1);
+    newCalc.units = getUnitsCount(calc);
+  }
+};
+
+const doRefactorInput = (currentPressedKey, previousPressedKey, calc) => {
+  if (isDecimal(currentPressedKey.value)) {
+    if (isOperator(previousPressedKey) || !previousPressedKey) {
+      currentPressedKey.value = "0.";
+    }
+  }
+  if (isOperator(currentPressedKey.value)) {
+    calc.pressedOperatorsList =
+      calc.pressedOperatorsList + currentPressedKey.value;
+    if (isDecimal(previousPressedKey)) {
+      calc.input = calc.input.concat("0");
+    }
+
+    if (isOperator(previousPressedKey)) {
+      calc.input = calc.input.slice(0, -1);
+    }
+  }
+};
+
+const hideUnhidenOutputPanel = (lastInputChar, resultRef) => {
+  //When lastInput is the operator then hide the result else unhide the result
+  resultRef.current.style.display = isOperator(lastInputChar)
+    ? "none"
+    : "block";
+};
 export const Calculator = React.memo(({ calcKeys }) => {
   const [calc, setCalc] = useState(defaultValuesCalc);
   var resultRef = useRef();
-  // console.log("Calculator: calc = ", calc);
-  const getUnits = () => {
-    // Return the number of units only when there are additions.
-    if (
-      calc.pressedOperatorsList === "+".repeat(calc.pressedOperatorsList.length)
-    ) {
-      const unitsCount = calc.input.split("+").length;
-      return calc.input.startsWith("+") ? unitsCount - 1 : unitsCount;
-    }
-  };
+
   const compute = (currentPressedKey) => {
     const newCalc = { ...calc };
-    if (currentPressedKey.name === operations.ALL_CLEAR) {
-      newCalc.input = defaultValuesCalc.input;
-      newCalc.result = defaultValuesCalc.result;
-      newCalc.pressedOperatorsList = defaultValuesCalc.pressedOperatorsList;
-      newCalc.units = defaultValuesCalc.units;
-      setCalc(newCalc);
-      return;
-    }
-
     const calcInputLen = calc.input.length;
-    var previousPressedKey = "";
-    if (calcInputLen) {
-      previousPressedKey = calc.input.at(-1);
-    }
+    var previousPressedKey = calcInputLen ? calc.input.at(-1) : "";
 
-    if (currentPressedKey.name === operations.ENTER) {
-      // Throw an error when no inputs provided or enter is pressed right after any operators
-      if (!calc.input?.length || isOperator(previousPressedKey)) {
-        return toastMsg({
-          type: toastMsgConstant.TOAST_ERROR,
-          msg: "Invalid format used",
-          css: {},
-        });
-      }
-      resultRef.current.style.fontSize = "2.3rem";
-      calc.input = Number(calc.result?.toString().trim());
-      return;
-    } else {
-      resultRef.current.style.fontSize = "1.7rem";
-    }
-
-    if (currentPressedKey.name === operations.CLEAR) {
-      calc.input = calc.input.slice(0, -1);
-
-      // Updating the operators
-      if (isOperator(previousPressedKey)) {
-        calc.pressedOperatorsList = calc.pressedOperatorsList.slice(0, -1);
-        newCalc.units = getUnits();
-      }
-    } else {
-      if (isDecimal(currentPressedKey.value)) {
-        if (isOperator(previousPressedKey) || !previousPressedKey) {
-          currentPressedKey.value = "0.";
-        }
-      }
-      if (isOperator(currentPressedKey.value)) {
-        calc.pressedOperatorsList =
-          calc.pressedOperatorsList + currentPressedKey.value;
-        if (isDecimal(previousPressedKey)) {
-          // console.log(
-          //   "Calculator: currentPressedKey is operator and previousPressedKey was decimal so concat 0"
-          // );
-          calc.input = calc.input.concat("0");
-        }
-
-        if (isOperator(previousPressedKey)) {
-          // console.log("Stripping");
-          calc.input = calc.input.slice(0, -1);
-        }
-      }
+    switch (currentPressedKey?.name) {
+      case operations.ALL_CLEAR:
+        doAllClear(newCalc);
+        setCalc(newCalc);
+        return;
+      case operations.ENTER:
+        doOnEnterOperations(calc, previousPressedKey, resultRef);
+        return;
+      case operations.CLEAR:
+        console.log("Clearing one at a time");
+        doClear(calc, previousPressedKey, newCalc);
+        break;
+      default:
+        resultRef.current.style.fontSize = "1.7rem";
+        doRefactorInput(currentPressedKey, previousPressedKey, calc);
     }
 
     const { success, error } = validateCalcInputs(
@@ -102,13 +119,18 @@ export const Calculator = React.memo(({ calcKeys }) => {
     // console.log(
     //   "Calculator : success= ",
     //   success,
+    //   "error= ",
+    //   error,
+
     //   "and calc = ",
     //   calc,
     //   "previousPressedKey = ",
     //   previousPressedKey
     // );
 
-    if (error?.length) {
+    if (!success && error?.length) {
+      console.log("Calculator: error = ", error);
+      // Preserve the -/+ sign when it is the first character.
       if (
         previousPressedKey === operations.MINUS ||
         previousPressedKey === operations.ADD
@@ -122,45 +144,36 @@ export const Calculator = React.memo(({ calcKeys }) => {
         css: {},
       });
     }
-    if (success) {
-      const updatedInput = `${calc.input}${currentPressedKey.value}`.trim();
-      newCalc.pressedOperatorsList = calc.pressedOperatorsList;
-      if (!updatedInput.length) {
-        newCalc.input = defaultValuesCalc.input;
-        newCalc.result = defaultValuesCalc.result;
-        newCalc.pressedOperatorsList = defaultValuesCalc.pressedOperatorsList;
-        newCalc.units = defaultValuesCalc.units;
-      } else {
-        const lastInputChar = updatedInput.at(-1);
-        newCalc.input = updatedInput;
-        const isInputContainOperator = operatorsList.some((i) => {
-          return updatedInput.includes(i);
-        });
 
-        if (isDigit(lastInputChar) && isInputContainOperator) {
-          try {
-            const result = eval(updatedInput.toString());
-            newCalc.result = result.toFixed(3);
-            newCalc.units = getUnits();
-          } catch (err) {
-            return toastMsg({
-              type: toastMsgConstant.TOAST_ERROR,
-              msg: err,
-              css: {},
-            });
-          }
-        }
+    const updatedInput = `${calc.input}${currentPressedKey.value}`.trim();
+    newCalc.pressedOperatorsList = calc.pressedOperatorsList;
+    if (!updatedInput.length) {
+      doAllClear(newCalc);
+    } else {
+      const lastInputChar = updatedInput.at(-1);
+      newCalc.input = updatedInput;
+      const isInputContainOperator = operatorsList.some((i) =>
+        updatedInput.includes(i)
+      );
 
-        //When lastInput is the operator then hide the result else unhide the result
-        if (isOperator(lastInputChar)) {
-          resultRef.current.style.display = "none";
-        } else {
-          resultRef.current.style.display = "";
+      if (isDigit(lastInputChar) && isInputContainOperator) {
+        try {
+          const result = eval(updatedInput.toString());
+          newCalc.result = result.toFixed(3);
+          newCalc.units = getUnitsCount(calc);
+        } catch (err) {
+          return toastMsg({
+            type: toastMsgConstant.TOAST_ERROR,
+            msg: err,
+            css: {},
+          });
         }
       }
-      // console.log("Calculator: updating the calc , newCalc = ", newCalc);
-      setCalc(newCalc);
+
+      hideUnhidenOutputPanel(lastInputChar, resultRef);
     }
+    console.log("Calculator: updating the calc , newCalc = ", newCalc);
+    setCalc(newCalc);
   };
 
   return (
