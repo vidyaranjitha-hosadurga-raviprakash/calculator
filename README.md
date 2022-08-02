@@ -5,4 +5,6 @@ the iphone's calculator where it doesn't preserve the user inputs but just displ
 final computed result/value of the inputs.
 
 Tech stack - React, MUI
+
+
 **Live link : [calculator-prismatic](https://calculator-prismatic.netlify.app/)**
