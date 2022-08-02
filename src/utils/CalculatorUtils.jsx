@@ -77,7 +77,6 @@ export const handleAllClear = (newCalc) => {
 };
 
 export const handleEnter = (calc, previousPressedKey, resultRef) => {
-  
   // Throw an error when no inputs provided or enter is pressed right after any operators
   if (!calc.input?.length || isOperator(previousPressedKey)) {
     return toastMsg({
@@ -91,7 +90,6 @@ export const handleEnter = (calc, previousPressedKey, resultRef) => {
 };
 
 export const handleClear = (calc, previousPressedKey, newCalc) => {
-
   calc.input = calc.input.slice(0, -1);
 
   // Updating the unit's count when number is removed.
@@ -102,7 +100,6 @@ export const handleClear = (calc, previousPressedKey, newCalc) => {
 };
 
 export const refactorInput = (currentPressedKey, previousPressedKey, calc) => {
-
   // prefix 0 when . is pressed as first input or right after any operator
   if (isDecimal(currentPressedKey.value)) {
     if (isOperator(previousPressedKey) || !previousPressedKey) {
@@ -110,7 +107,6 @@ export const refactorInput = (currentPressedKey, previousPressedKey, calc) => {
     }
   }
 
-  
   if (isOperator(currentPressedKey.value)) {
     calc.pressedOperatorsList =
       calc.pressedOperatorsList + currentPressedKey.value;
@@ -127,7 +123,7 @@ export const refactorInput = (currentPressedKey, previousPressedKey, calc) => {
 };
 
 export const hideUnhidenOutputPanel = (lastInputChar, resultRef) => {
-  //When lastInput is the operator then hide the result else unhide the result
+  //When lastInput is the operator then hide the result else show the result
   resultRef.current.style.display = isOperator(lastInputChar)
     ? "none"
     : "block";
