@@ -77,6 +77,7 @@ export const handleAllClear = (newCalc) => {
 };
 
 export const handleEnter = (calc, previousPressedKey, resultRef) => {
+  
   // Throw an error when no inputs provided or enter is pressed right after any operators
   if (!calc.input?.length || isOperator(previousPressedKey)) {
     return toastMsg({
@@ -90,7 +91,7 @@ export const handleEnter = (calc, previousPressedKey, resultRef) => {
 };
 
 export const handleClear = (calc, previousPressedKey, newCalc) => {
-  console.log("Calculator: doClear");
+
   calc.input = calc.input.slice(0, -1);
 
   // Updating the unit's count when number is removed.
@@ -100,19 +101,21 @@ export const handleClear = (calc, previousPressedKey, newCalc) => {
   }
 };
 
-export const refactorInput = (
-  currentPressedKey,
-  previousPressedKey,
-  calc
-) => {
+export const refactorInput = (currentPressedKey, previousPressedKey, calc) => {
+
+  // prefix 0 when . is pressed as first input or right after any operator
   if (isDecimal(currentPressedKey.value)) {
     if (isOperator(previousPressedKey) || !previousPressedKey) {
-      currentPressedKey.value = "0.";
+      currentPressedKey.value = `0${currentPressedKey.value}`;
     }
   }
+
+  
   if (isOperator(currentPressedKey.value)) {
     calc.pressedOperatorsList =
       calc.pressedOperatorsList + currentPressedKey.value;
+
+    // Example : Previous input = 0. and (any operator) *  is pressed then prefix 0 for the operator i.e 0.0* .
     if (isDecimal(previousPressedKey)) {
       calc.input = calc.input.concat("0");
     }
