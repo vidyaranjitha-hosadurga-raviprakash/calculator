@@ -71,7 +71,7 @@ export const Calculator = React.memo(({ calcKeys }) => {
       newCalc.input = updatedInput;
       const lastInputChar = updatedInput.at(-1);
 
-      // Used to determine whether should be evaluated or not.
+      // Used to determine whether inputs should be evaluated or not.
       const isInputContainOperator = operatorsList.some((i) =>
         updatedInput.includes(i)
       );
