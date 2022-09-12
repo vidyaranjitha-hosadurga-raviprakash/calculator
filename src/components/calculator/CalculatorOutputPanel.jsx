@@ -25,6 +25,7 @@ export const CalculatorOutputPanel = React.forwardRef(({ value }, ref) => {
           overflowWrap: "break-word",
           textAlign: "right",
           border: "0.01rem white solid",
+          minHeight: "7rem",
         }}
       >
         <Grid
